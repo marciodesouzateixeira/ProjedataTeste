@@ -19,6 +19,13 @@ public class Funcionario extends Pessoa {
     private String funcao;
 
     /**
+     * Construtor padrão.
+     */
+    public Funcionario(){
+        super();
+    }
+
+    /**
      * Cria uma nova instância de Funcionario com nome, data de nascimento, salário e função.
      *
      * @param nome            O nome do funcionário.

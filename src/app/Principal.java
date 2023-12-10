@@ -5,6 +5,7 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Classe que representa a principal funcionalidade do sistema relacionada aos funcionários.
@@ -19,24 +20,24 @@ public class Principal {
      * @param dataNascimento Data de nascimento do funcionário.
      * @param salario Salário do funcionário.
      * @param funcao Função do funcionário.
-     * @throws IllegalArgumentException Se algum dado do funcionário for inválido.
+     * @return true se o funcionário foi inserido com sucesso, ou false se a operação falhar.
      */
     public boolean inserirFuncionario(String nome, LocalDate dataNascimento, BigDecimal salario, String funcao) {
         if (nome.trim().isEmpty()) {
             System.out.println("Nome deve ser preenchido.");
-            throw new IllegalArgumentException("Nome deve ser preenchido.");
+            return false;
         }
         if (dataNascimento.isAfter(LocalDate.now())) {
             System.out.println("Data de nascimento deve estar no passado.");
-            throw new IllegalArgumentException("Data de nascimento deve estar no passado.");
+            return false;
         }
         if (salario.compareTo(BigDecimal.ZERO) <= 0) {
             System.out.println("Salário deve ser um valor positivo.");
-            throw new IllegalArgumentException("Salário deve ser um valor positivo.");
+            return false;
         }
         if (funcao.trim().isEmpty()) {
             System.out.println("Função deve ser preenchida.");
-            throw new IllegalArgumentException("Função deve ser preenchida.");
+            return false;
         }
         return funcionarios.add(new Funcionario(nome, dataNascimento, salario, funcao));
     }
@@ -45,14 +46,37 @@ public class Principal {
      * Remove um funcionário da lista com base no nome fornecido.
      *
      * @param nome O nome do funcionário a ser removido.
-     * @throws IllegalArgumentException Se o nome fornecido for nulo ou vazio.
-     * @throws NoSuchElementException   Se o funcionário com o nome fornecido não for encontrado.
+     * @return true se o funcionário foi removido com sucesso, ou false se o funcionário não foi encontrado.
      */
     public boolean removerFuncionarioPorNome(String nome) {
         if (nome == null || nome.trim().isEmpty()) {
-            throw new IllegalArgumentException("Nome inválido. Forneça um nome válido para remover um funcionário.");
+            System.out.println("Nome inválido. Forneça um nome válido para remover um funcionário.");
+            return false;
         }
         return funcionarios.removeIf(funcionario -> funcionario.getNome().equalsIgnoreCase(nome));
+    }
+
+    /**
+     * Busca funcionários por nome.
+     *
+     * @param nome O nome do funcionário a ser buscado.
+     * @return Uma lista de funcionários com o nome correspondente.
+     */
+    public List<Funcionario> buscarFuncionariosPorNome(String nome) {
+        if (nome == null || nome.trim().isEmpty()) {
+            System.out.println("Nome inválido. Forneça um nome válido para buscar funcionários.");
+            return new ArrayList<>();
+        }
+
+        List<Funcionario> funcionariosEncontrados = funcionarios.stream()
+                .filter(funcionario -> funcionario.getNome().equalsIgnoreCase(nome))
+                .collect(Collectors.toList());
+
+        if (funcionariosEncontrados.isEmpty()) {
+            System.out.println("Nenhum funcionário encontrado com o nome: " + nome);
+        }
+
+        return funcionariosEncontrados;
     }
 
     /**
@@ -88,12 +112,12 @@ public class Principal {
      * Aumenta os salários de todos os funcionários por um percentual fornecido.
      *
      * @param percentual O percentual pelo qual os salários devem ser aumentados.
-     * @throws IllegalArgumentException Se o percentual for menor ou igual a zero.
+     * @return true se a operação foi bem-sucedida, ou false se houve um erro.
      */
     public boolean aumentarSalarios(BigDecimal percentual) {
         if (percentual.compareTo(BigDecimal.ZERO) <= 0) {
             System.out.println("Percentual inválido. Forneça um percentual maior que zero.");
-            throw new IllegalArgumentException("Percentual inválido. Forneça um percentual maior que zero.");
+            return false;
         }
         try {
             for (Funcionario funcionario : funcionarios) {
@@ -132,13 +156,12 @@ public class Principal {
      * Imprime os funcionários agrupados por função.
      *
      * @param funcionariosPorFuncao O mapa que contém os funcionários agrupados por função.
-     * @throws NullPointerException     Se o mapa de funcionários por função for nulo.
-     * @throws IllegalArgumentException Se alguma chave ou lista no mapa for nula.
+     * @return true se a operação foi bem-sucedida, ou false se houve um erro.
      */
     public boolean imprimirFuncionariosAgrupadosPorFuncao(Map<String, List<Funcionario>> funcionariosPorFuncao) {
         if (funcionariosPorFuncao == null) {
             System.out.println("O mapa de funcionários por função não deve ser nulo.");
-            throw new NullPointerException("O mapa de funcionários por função não deve ser nulo.");
+            return false;
         }
         try{
             funcionariosPorFuncao.forEach((funcao, lista) -> {
@@ -158,42 +181,50 @@ public class Principal {
      * Imprime os funcionários cujos aniversários correspondem aos meses fornecidos.
      *
      * @param meses Um array de meses (valores entre 1 e 12) para os quais procurar aniversariantes.
-     * @throws NullPointerException     Se o array de meses ou a lista de funcionários for nulo.
-     * @throws IllegalArgumentException Se algum valor no array de meses for inválido.
+     * @return true se a operação foi bem-sucedida, ou false se houve um erro.
      */
-    public void imprimirAniversariantes(int[] meses) {
+    public boolean imprimirAniversariantes(int[] meses) {
         if (meses == null || funcionarios == null) {
             System.out.println("O array de meses e a lista de funcionários não devem ser nulos.");
-            throw new NullPointerException("O array de meses e a lista de funcionários não devem ser nulos.");
+            return false;
         }
 
         if (Arrays.stream(meses).anyMatch(mes -> mes < 1 || mes > 12)) {
             System.out.println("Valores inválidos no array de meses. Os meses devem estar entre 1 e 12.");
-            throw new IllegalArgumentException("Valores inválidos no array de meses. Os meses devem estar entre 1 e 12.");
+            return false;
         }
 
         List<Funcionario> aniversariantes = funcionarios.stream()
                 .filter(funcionario -> Arrays.stream(meses).anyMatch(mes -> mes == funcionario.getDataNascimento().getMonthValue()))
                 .toList();
-        imprimirFuncionarios(aniversariantes);
+        try {
+            imprimirFuncionarios(aniversariantes);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     /**
      * Imprime o funcionário mais velho da lista.
      *
-     * @throws IllegalArgumentException Se não houver funcionários na lista.
+     * @return O funcionário mais velho.
      */
-    public void imprimirFuncionarioMaiorIdade() {
+    public Funcionario imprimirFuncionarioMaiorIdade() {
+        Funcionario maisVelho = new Funcionario();
         if (funcionarios.isEmpty()) {
             System.out.println("Não há funcionários para calcular a idade do mais velho.");
-            throw new IllegalArgumentException("Não há funcionários para calcular a idade do mais velho.");
+            return maisVelho;
         }
-
-        Funcionario maisVelho = funcionarios.stream()
-                .sorted(Comparator.comparing(Funcionario::getDataNascimento))
-                .toList().getFirst();
-
-        System.out.println("Funcionário mais velho Nome: " + maisVelho.getNome() + " - Idade: " + calcularIdade(maisVelho.getDataNascimento()));
+        try{
+            maisVelho = funcionarios.stream()
+                    .sorted(Comparator.comparing(Funcionario::getDataNascimento))
+                    .toList().getFirst();
+            System.out.println("Funcionário mais velho Nome: " + maisVelho.getNome() + " - Idade: " + calcularIdade(maisVelho.getDataNascimento()));
+            return maisVelho;
+        } catch (Exception e) {
+            return maisVelho;
+        }
     }
 
     /**
@@ -214,51 +245,68 @@ public class Principal {
     /**
      * Imprime os funcionários ordenados por nome.
      *
-     * @throws IllegalArgumentException Se não houver funcionários na lista.
+     * @return true se a operação foi bem-sucedida, ou false se houve um erro.
      */
-    public void imprimirFuncionariosOrdenadoPorNome() {
+    public boolean imprimirFuncionariosOrdenadoPorNome() {
         if (funcionarios.isEmpty()) {
             System.out.println("Não há funcionários para ordenar.");
-            throw new IllegalArgumentException("Não há funcionários para ordenar.");
+            return false;
         }
 
         funcionarios.sort(Comparator.comparing(Funcionario::getNome));
         imprimirFuncionarios(funcionarios);
+        return true;
     }
 
     /**
      * Imprime o total dos salários dos funcionários.
      *
-     * @throws IllegalArgumentException Se não houver funcionários na lista.
+     * @return true se a operação foi bem-sucedida, ou false se houve um erro.
      */
-    public void imprimirTotalSalarios() {
+    public boolean imprimirTotalSalarios() {
         if (funcionarios.isEmpty()) {
             System.out.println("Não há funcionários para somar os salários.");
-            throw new IllegalArgumentException("Não há funcionários para somar os salários.");
+            return false;
         }
 
-        BigDecimal totalSalarios = funcionarios.stream().map(Funcionario::getSalario)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        System.out.println("Total dos salários: " + decimal.format(totalSalarios));
+        try{
+            BigDecimal totalSalarios = funcionarios.stream().map(Funcionario::getSalario)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            System.out.println("Total dos salários: " + decimal.format(totalSalarios));
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+
     }
 
     /**
      * Imprime quantos salários mínimos cada funcionário ganha.
      *
      * @param salarioMinimo O valor do salário mínimo.
-     * @throws IllegalArgumentException Se o salário mínimo for nulo ou menor ou igual a zero.
+     * @return true se a operação foi bem-sucedida, ou false se houve um erro.
      */
-    public void imprimirSalariosMinimos(BigDecimal salarioMinimo) {
+    public boolean imprimirSalariosMinimos(BigDecimal salarioMinimo) {
         BigDecimal salarioMinimoEquivalent;
+
+        if (funcionarios.isEmpty()) {
+            System.out.println("Não há funcionários para imprimir salários mínimos.");
+            return false;
+        }
 
         if (salarioMinimo == null || salarioMinimo.compareTo(BigDecimal.ZERO) <= 0) {
             System.out.println("O salário mínimo deve ser um valor positivo não nulo.");
-            throw new IllegalArgumentException("O salário mínimo deve ser um valor positivo não nulo.");
+            return false;
         }
 
-        for (Funcionario funcionario : funcionarios) {
-            salarioMinimoEquivalent  = funcionario.getSalario().divide(salarioMinimo, 2, RoundingMode.HALF_UP);
-            System.out.println(funcionario.getNome() + " ganha " + salarioMinimoEquivalent + " salários mínimos.");
+        try{
+            for (Funcionario funcionario : funcionarios) {
+                salarioMinimoEquivalent  = funcionario.getSalario().divide(salarioMinimo, 2, RoundingMode.HALF_UP);
+                System.out.println(funcionario.getNome() + " ganha " + salarioMinimoEquivalent + " salários mínimos.");
+        }
+            return true;
+        } catch (Exception e) {
+            return false;
         }
     }
 }

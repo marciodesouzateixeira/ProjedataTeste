@@ -27,6 +27,10 @@ public class Pessoa {
         this.dataNascimento = dataNascimento;
     }
 
+    public Pessoa() {
+
+    }
+
     /**
      * Obtém a data de nascimento da pessoa.
      *

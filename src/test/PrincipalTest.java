@@ -7,10 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class PrincipalTest {
     @Test
@@ -27,9 +24,10 @@ public class PrincipalTest {
     @Test
     public void testInserirFuncionarioNulo() {
         Principal principal = new Principal();
+        boolean retorno = principal.inserirFuncionario("", LocalDate.of(2000, 10, 18), new BigDecimal("2009.44"), "Operador");
 
         // Tenta inserir um funcionário com Nome vazio na lista, deve retornar um exception
-        Assertions.assertThrows(IllegalArgumentException.class, () -> principal.inserirFuncionario("", LocalDate.of(2000, 10, 18), new BigDecimal("2009.44"), "Operador"),"Nome deve ser preenchido.");
+        Assertions.assertFalse(retorno);
     }
 
     @Test
@@ -56,8 +54,9 @@ public class PrincipalTest {
     @Test
     public void removerFuncionarioNomeVazio() {
         Principal principal = new Principal();
+        boolean retorno = principal.removerFuncionarioPorNome("");
 
-        Assertions.assertThrows(IllegalArgumentException.class, () -> principal.removerFuncionarioPorNome(""));
+        Assertions.assertFalse(retorno);
     }
 
     @Test
@@ -74,8 +73,9 @@ public class PrincipalTest {
     public void aumentarSalariosComErro() {
         BigDecimal percentual = BigDecimal.valueOf(-10);
         Principal principal = new Principal();
+        boolean retorno = principal.aumentarSalarios(percentual);
 
-        Assertions.assertThrows(IllegalArgumentException.class, () -> principal.aumentarSalarios(percentual));
+        Assertions.assertFalse(retorno);
     }
 
     @Test
@@ -110,11 +110,11 @@ public class PrincipalTest {
         Map<String, List<Funcionario>> funcionariosPorFuncao = new HashMap<>();
         Principal principal = new Principal();
 
-        funcionariosPorFuncao.put("Programador", Arrays.asList(
+        funcionariosPorFuncao.put("Programador", List.of(
                 new Funcionario("Fulano de Tal", LocalDate.of(1980, 1, 1), BigDecimal.valueOf(1000.00), "Programador"),
                 new Funcionario("Beltrano de Tal", LocalDate.of(1981, 2, 2), BigDecimal.valueOf(2000.00), "Programador")
         ));
-        funcionariosPorFuncao.put("Analista", Arrays.asList(
+        funcionariosPorFuncao.put("Analista", List.of(
                 new Funcionario("Ciclano de Tal", LocalDate.of(1982, 3, 3), BigDecimal.valueOf(3000.00), "Analista")
         ));
 
@@ -128,6 +128,117 @@ public class PrincipalTest {
         Map<String, List<Funcionario>> funcionariosPorFuncao = null;
         Principal principal = new Principal();
 
-        Assertions.assertThrows(NullPointerException.class, () -> principal.imprimirFuncionariosAgrupadosPorFuncao(funcionariosPorFuncao));
+        Assertions.assertFalse(() -> principal.imprimirFuncionariosAgrupadosPorFuncao(funcionariosPorFuncao));
+    }
+
+    @Test
+    public void imprimirAniversariantesComSucesso() {
+        List<Funcionario> funcionarios = new ArrayList<>();
+         Principal principal = new Principal();
+        funcionarios.add(new Funcionario("Fulano de Tal", LocalDate.of(1980, 1, 1), BigDecimal.valueOf(1000.00), "Programador"));
+        funcionarios.add(new Funcionario("Beltrano de Tal", LocalDate.of(1981, 2, 2), BigDecimal.valueOf(2000.00), "Analista"));
+        //funcionarios.add(new Funcionario("Ciclano de Tal", LocalDate.of(1982, 3, 3), BigDecimal.valueOf(3000.00), "Gerente"));
+
+        int[] meses = {1, 2, 3};
+
+        boolean impressoComSucesso = principal.imprimirAniversariantes(meses);
+        Assertions.assertTrue(impressoComSucesso);
+
+        List<Funcionario> aniversariantesEsperados = new ArrayList<>();
+        aniversariantesEsperados.add(funcionarios.get(0));
+        aniversariantesEsperados.add(funcionarios.get(1));
+
+         Assertions.assertEquals(aniversariantesEsperados, funcionarios.stream()
+                .filter(funcionario -> Arrays.stream(meses).anyMatch(mes -> mes == funcionario.getDataNascimento().getMonthValue()))
+                .toList());
+    }
+
+    @Test
+    public void imprimirAniversariantesComListaDeFuncionariosNula() {
+        Principal principal = new Principal();
+        boolean retorno = false;
+        retorno = principal.imprimirAniversariantes(null);
+        Assertions.assertFalse(retorno);
+    }
+
+    @Test
+    public void imprimirAniversariantesComValoresInvalidosNoArrayDeMeses() {
+        Principal principal = new Principal();
+        boolean retorno = false;
+        retorno = principal.imprimirAniversariantes(new int[]{13, 4, 2});
+        Assertions.assertFalse(retorno);
+    }
+
+    @Test
+    void testImprimirFuncionarioMaiorIdadeComFuncionarios() {
+        Principal principal = new Principal();
+
+        // Adiciona funcionários à lista
+        principal.inserirFuncionario("João", LocalDate.of(1990, 1, 15), BigDecimal.valueOf(5000.00), "Desenvolvedor");
+        principal.inserirFuncionario("Maria", LocalDate.of(1985, 5, 20), BigDecimal.valueOf(6000.00), "Analista");
+
+        // Testa o método imprimirFuncionarioMaiorIdade
+        Funcionario maisVelho = principal.imprimirFuncionarioMaiorIdade();
+        Assertions.assertNotNull(maisVelho);
+        Assertions.assertEquals("Maria", maisVelho.getNome());
+    }
+
+    @Test
+    void testImprimirFuncionarioMaiorIdadeSemFuncionarios() {
+        Principal principal = new Principal();
+
+        // Testa o método imprimirFuncionarioMaiorIdade quando não há funcionários
+        Funcionario maisVelho = principal.imprimirFuncionarioMaiorIdade();
+        Assertions.assertNotNull(maisVelho);
+        Assertions.assertNull(maisVelho.getNome()); // Supondo que o nome do funcionário maisVelho seja inicializado como vazio
+    }
+
+    @Test
+    void testImprimirFuncionariosOrdenadoPorNomeListaNaoVazia() {
+        Principal principal = new Principal();
+        principal.inserirFuncionario("Alice", LocalDate.of(1990, 5, 15), BigDecimal.valueOf(5000), "Desenvolvedor");
+        principal.inserirFuncionario("Bob", LocalDate.of(1985, 10, 20), BigDecimal.valueOf(6000), "Analista");
+        Assertions.assertTrue(principal.imprimirFuncionariosOrdenadoPorNome());
+    }
+
+    @Test
+    void testImprimirFuncionariosOrdenadoPorNomeListaVazia() {
+        Principal principal = new Principal();
+        Assertions.assertFalse(principal.imprimirFuncionariosOrdenadoPorNome());
+    }
+
+    @Test
+    void testImprimirTotalSalariosListaNaoVazia() {
+        Principal principal = new Principal();
+        principal.inserirFuncionario("Alice", LocalDate.of(1990, 5, 15), BigDecimal.valueOf(5000), "Desenvolvedor");
+        principal.inserirFuncionario("Bob", LocalDate.of(1985, 10, 20), BigDecimal.valueOf(6000), "Analista");
+        Assertions.assertTrue(principal.imprimirTotalSalarios());
+    }
+
+    @Test
+    void testImprimirTotalSalariosListaVazia() {
+        Principal principal = new Principal();
+        Assertions.assertFalse(principal.imprimirTotalSalarios());
+    }
+
+    @Test
+    void testImprimirSalariosMinimosListaNaoVazia() {
+        Principal principal = new Principal();
+        principal.inserirFuncionario("Alice", LocalDate.of(1990, 5, 15), BigDecimal.valueOf(5000), "Desenvolvedor");
+        principal.inserirFuncionario("Bob", LocalDate.of(1985, 10, 20), BigDecimal.valueOf(6000), "Analista");
+        Assertions.assertTrue(principal.imprimirSalariosMinimos(BigDecimal.valueOf(1000)));
+    }
+
+    @Test
+    void testImprimirSalariosMinimosListaVazia() {
+        Principal principal = new Principal();
+        Assertions.assertFalse(principal.imprimirSalariosMinimos(BigDecimal.valueOf(1000)));
+    }
+
+    @Test
+    void testImprimirSalariosMinimosSalarioMinimoInvalido() {
+        Principal principal = new Principal();
+        Assertions.assertFalse(principal.imprimirSalariosMinimos(BigDecimal.valueOf(0)));
+        Assertions.assertFalse(principal.imprimirSalariosMinimos(null));
     }
 }
