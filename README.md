@@ -33,8 +33,8 @@ Este é um sistema simples de gerenciamento de funcionários em Java, que permit
 3. Compile e execute o programa:
 
     ```bash
-    javac app/Principal.java
-    java app.Principal
+    javac app/Program.java
+    java app.Program
     ```
 
 4. Siga as instruções no console para interagir com o sistema.
