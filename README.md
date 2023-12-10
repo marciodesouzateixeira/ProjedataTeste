@@ -21,13 +21,13 @@ Este é um sistema simples de gerenciamento de funcionários em Java, que permit
 1. Clone o repositório:
 
     ```bash
-    git clone https://github.com/seu-usuario/sistema-gerenciamento-funcionarios.git
+    git clone https://github.com/seu-usuario/Projedata.git
     ```
 
 2. Navegue até o diretório do projeto:
 
     ```bash
-    cd sistema-gerenciamento-funcionarios
+    cd Projedata
     ```
 
 3. Compile e execute o programa:
@@ -41,7 +41,7 @@ Este é um sistema simples de gerenciamento de funcionários em Java, que permit
 
 ## Requisitos
 
-- JDK (Java Development Kit) instalado.
+- JDK 21 (Java Development Kit) instalado.
 
 ## Testes
 
@@ -50,11 +50,3 @@ O projeto utiliza o framework de teste JUnit 5.8.1 para garantir a integridade d
 ## Contribuindo
 
 Se desejar contribuir ou relatar problemas, sinta-se à vontade para abrir uma issue ou enviar um pull request.
-
-## Projeto de Teste
-
-Este projeto foi desenvolvido com base no [ProjedataTeste](https://github.com/marciodesouzateixeira/ProjedataTeste).
-
-## Licença
-
-Este projeto é distribuído sob a licença [MIT](LICENSE).
