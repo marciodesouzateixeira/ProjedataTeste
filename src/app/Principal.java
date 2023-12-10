@@ -90,7 +90,7 @@ public class Principal {
      * @param percentual O percentual pelo qual os salários devem ser aumentados.
      * @throws IllegalArgumentException Se o percentual for menor ou igual a zero.
      */
-    public void aumentarSalarios(BigDecimal percentual) {
+    public boolean aumentarSalarios(BigDecimal percentual) {
         if (percentual.compareTo(BigDecimal.ZERO) <= 0) {
             System.out.println("Percentual inválido. Forneça um percentual maior que zero.");
             throw new IllegalArgumentException("Percentual inválido. Forneça um percentual maior que zero.");
@@ -100,11 +100,13 @@ public class Principal {
                 funcionario.setSalario(funcionario.getSalario().multiply(BigDecimal.ONE.add(percentual))
                         .setScale(2, RoundingMode.HALF_UP));
             }
+            return true;
         } catch (NullPointerException e) {
             System.out.println("Erro ao aumentar salários: Lista de funcionários está vazia.");
         } catch (ArithmeticException e) {
             System.out.println("Erro ao aumentar salários: Percentual inválido.");
         }
+        return false;
     }
 
     /**
@@ -133,18 +135,23 @@ public class Principal {
      * @throws NullPointerException     Se o mapa de funcionários por função for nulo.
      * @throws IllegalArgumentException Se alguma chave ou lista no mapa for nula.
      */
-    public void imprimirFuncionariosAgrupadosPorFuncao(Map<String, List<Funcionario>> funcionariosPorFuncao) {
+    public boolean imprimirFuncionariosAgrupadosPorFuncao(Map<String, List<Funcionario>> funcionariosPorFuncao) {
         if (funcionariosPorFuncao == null) {
             System.out.println("O mapa de funcionários por função não deve ser nulo.");
             throw new NullPointerException("O mapa de funcionários por função não deve ser nulo.");
         }
-        funcionariosPorFuncao.forEach((funcao, lista) -> {
-            if (funcao == null || lista == null) {
-                throw new IllegalArgumentException("Chave ou lista no mapa de funcionários por função não deve ser nula.");
-            }
-            System.out.println("Funcionários da função '" + funcao + "':");
-            imprimirFuncionarios(lista);
-        });
+        try{
+            funcionariosPorFuncao.forEach((funcao, lista) -> {
+                if (funcao == null || lista == null) {
+                    throw new IllegalArgumentException("Chave ou lista no mapa de funcionários por função não deve ser nula.");
+                }
+                System.out.println("Funcionários da função '" + funcao + "':");
+                imprimirFuncionarios(lista);
+            });
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     /**
