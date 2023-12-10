@@ -71,5 +71,8 @@ public class Program {
         // Imprime quantos salários mínimos cada funcionário ganha, considerando um salário mínimo de R$1.212,00.
         principal.imprimirSalariosMinimos(new BigDecimal("1212.00"));
         System.out.println("3.12 Imprimir quantos salários mínimos ganha cada funcionário considerando um salário mínimo de R$1.212,00");
+
+        // Buscar funcionário informando um nome específico, por ora a busca é exata
+        principal.buscarFuncionariosPorNome("Maria");
     }
 }

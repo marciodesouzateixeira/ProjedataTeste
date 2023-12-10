@@ -156,7 +156,7 @@ public class PrincipalTest {
     @Test
     public void imprimirAniversariantesComListaDeFuncionariosNula() {
         Principal principal = new Principal();
-        boolean retorno = false;
+        boolean retorno;
         retorno = principal.imprimirAniversariantes(null);
         Assertions.assertFalse(retorno);
     }
@@ -164,7 +164,7 @@ public class PrincipalTest {
     @Test
     public void imprimirAniversariantesComValoresInvalidosNoArrayDeMeses() {
         Principal principal = new Principal();
-        boolean retorno = false;
+        boolean retorno;
         retorno = principal.imprimirAniversariantes(new int[]{13, 4, 2});
         Assertions.assertFalse(retorno);
     }
