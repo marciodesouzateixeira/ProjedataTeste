@@ -48,15 +48,11 @@ public class Principal {
      * @throws IllegalArgumentException Se o nome fornecido for nulo ou vazio.
      * @throws NoSuchElementException   Se o funcionário com o nome fornecido não for encontrado.
      */
-    public void removerFuncionarioPorNome(String nome) {
+    public boolean removerFuncionarioPorNome(String nome) {
         if (nome == null || nome.trim().isEmpty()) {
             throw new IllegalArgumentException("Nome inválido. Forneça um nome válido para remover um funcionário.");
         }
-        if (!funcionarios.removeIf(funcionario -> funcionario.getNome().equalsIgnoreCase(nome))) {
-            // Aqui você pode decidir o que fazer se o funcionário não for encontrado.
-            // Pode ser uma exceção ou uma mensagem de log.
-            System.out.println("Funcionário com o nome '" + nome + "' não encontrado.");
-        }
+        return funcionarios.removeIf(funcionario -> funcionario.getNome().equalsIgnoreCase(nome));
     }
 
     /**

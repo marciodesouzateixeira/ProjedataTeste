@@ -26,4 +26,33 @@ public class PrincipalTest {
         // Tenta inserir um funcionário com Nome vazio na lista, deve retornar um exception
         Assertions.assertThrows(IllegalArgumentException.class, () -> principal.inserirFuncionario("", LocalDate.of(2000, 10, 18), new BigDecimal("2009.44"), "Operador"),"Nome deve ser preenchido.");
     }
+
+    @Test
+    public void removerFuncionarioComSucesso() {
+        Principal principal = new Principal();
+        // Insere o funcionário na lista
+        Boolean retorno = principal.inserirFuncionario("Maria", LocalDate.of(2000, 10, 18), new BigDecimal("2009.44"), "Operador");
+
+
+        boolean removido = principal.removerFuncionarioPorNome("Maria");
+
+        Assertions.assertTrue(removido);
+    }
+
+    @Test
+    public void removerFuncionarioNaoEncontrado() {
+        Principal principal = new Principal();
+        // Insere o funcionário na lista
+        Boolean retorno = principal.inserirFuncionario("Maria", LocalDate.of(2000, 10, 18), new BigDecimal("2009.44"), "Operador");
+
+        boolean removido = principal.removerFuncionarioPorNome("João");
+
+        Assertions.assertFalse(removido);
+    }
+    @Test
+    public void removerFuncionarioNomeVazio() {
+        Principal principal = new Principal();
+
+        IllegalArgumentException illegalArgumentException = Assertions.assertThrows(IllegalArgumentException.class, () -> principal.removerFuncionarioPorNome(""));
+    }
 }
