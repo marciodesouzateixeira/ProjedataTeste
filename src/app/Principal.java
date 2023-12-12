@@ -145,10 +145,9 @@ public class Principal {
             throw new NullPointerException("A lista de funcionários não deve ser nula.");
         }
 
-        Map<String, List<Funcionario>> funcionariosPorFuncao = new HashMap<>();
-        for (Funcionario funcionario : funcionarios) {
-            funcionariosPorFuncao.computeIfAbsent(funcionario.getFuncao(), k -> new ArrayList<>()).add(funcionario);
-        }
+        Map<String, List<Funcionario>> funcionariosPorFuncao = funcionarios.stream()
+                .collect(Collectors.groupingBy(Funcionario::getFuncao));
+
         return funcionariosPorFuncao;
     }
 
